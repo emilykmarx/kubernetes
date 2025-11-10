@@ -18,5 +18,28 @@ ARG BASEIMAGE
 ARG BINARY
 
 FROM ubuntu:latest
-COPY ${BINARY} /bin/
+
+# Could copy in source to make dlv more convenient
+COPY ${BINARY} /usr/local/bin/${BINARY}
+
+RUN apt-get update && apt-get install -y build-essential git wget vim
+
+# Install go
+ENV GO_VERSION=1.22.7
+RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
+   rm -rf /usr/local/go && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+
+# Install dlv
+RUN git clone https://github.com/emilykmarx/go-set.git && \
+  git clone https://github.com/emilykmarx/graph.git && \
+  git clone https://github.com/emilykmarx/delve.git && \
+  cd delve;  go install github.com/go-delve/delve/cmd/dlv
+
+  # dlv is installed here
+ENV PATH=$PATH:/root/go/bin
+
+# kubeadm overrides entrypoint, but can change manifest after pod comes up
 ENTRYPOINT ["/bin/kube-scheduler"]
+
+# dlv exec /usr/local/bin/kube-scheduler -- --authentication-kubeconfig=/etc/kubernetes/scheduler.conf --authorization-kubeconfig=/etc/kubernetes/scheduler.conf --bind-address=127.0.0.1 --kubeconfig=/etc/kubernetes/scheduler.conf --leader-elect=true
