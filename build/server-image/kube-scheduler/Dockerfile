@@ -17,6 +17,6 @@
 ARG BASEIMAGE
 ARG BINARY
 
-FROM "${BASEIMAGE}"
+FROM ubuntu:latest
 COPY ${BINARY} /bin/
 ENTRYPOINT ["/bin/kube-scheduler"]
