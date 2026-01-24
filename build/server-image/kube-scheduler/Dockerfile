@@ -24,7 +24,7 @@ COPY ${BINARY} /usr/local/bin/${BINARY}
 RUN apt-get update && apt-get install -y build-essential git wget vim
 
 # Install go
-ENV GO_VERSION=1.22.7
+ENV GO_VERSION=1.22.6
 RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
    rm -rf /usr/local/go && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
